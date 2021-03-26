@@ -151,11 +151,13 @@ class CmdStanModel:
                 self._name, _ = os.path.splitext(exename)
             else:
                 if self._name != os.path.splitext(exename)[0]:
-                    raise ValueError(
-                        'Name mismatch between Stan file and compiled'
-                        ' executable, expecting basename: {}'
-                        ' found: {}.'.format(self._name, exename)
-                    )
+                    # allow for model name to differ from exename
+                    self._logger.info(
+            #         raise ValueError(
+                         'Name mismatch between Stan file and compiled'
+                         ' executable, expecting basename: {}'
+                         ' found: {}.'.format(self._name, exename)
+                     )
 
         if self._compiler_options is not None:
             self._compiler_options.validate()
@@ -1101,11 +1103,7 @@ class CmdStanModel:
         )
         self._logger.debug('sampling: %s', cmd)
         proc = subprocess.Popen(
-            cmd,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            env=os.environ,
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os.environ
         )
         if pbar:
             stdout_pbar = self._read_progress(proc, pbar, idx)
